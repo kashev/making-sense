@@ -22,12 +22,12 @@ Bluetooth::Bluetooth (uint8_t pinRX, uint8_t pinTX, String name)
 }
 
 void
-Bluetooth::begin (int baud)
+Bluetooth::begin (void)
 {
     pinMode(_pinRX, INPUT);
     pinMode(_pinTX, OUTPUT);
 
-    spp.begin(baud);
+    spp.begin(_BLUETOOTH_BAUD_RATE_);
 
     /* Initialize BT In Slave Mode */
 
@@ -39,22 +39,4 @@ Bluetooth::begin (int baud)
     spp.print("\r\n+INQ=1\r\n");              // make device inquireable
     delay(2000);
     spp.flush();
-}
-
-char
-Bluetooth::read (void)
-{
-    return spp.read();
-}
-
-void
-Bluetooth::print (String buf)
-{
-    spp.print(buf);
-}
-
-boolean
-Bluetooth::available (void)
-{
-    return spp.available();
 }

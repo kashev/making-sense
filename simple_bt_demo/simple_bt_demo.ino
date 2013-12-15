@@ -30,7 +30,6 @@ static int count = 0;
 void
 setup (void)
 {
-    // Serial.begin(9600);
     bt.begin();
 }
 
@@ -40,11 +39,11 @@ loop (void)
     char r;
     while (true)
     {
-        if (bt.available())
+        if (bt.spp.available())
         {
-            r = bt.read();
+            r = bt.spp.read();
 
-            bt.print(String(r));
+            bt.spp.print(r);
 
             if (r == 'i')
             {
@@ -55,9 +54,9 @@ loop (void)
                 count --;
             }
 
-            bt.print(String(count));
-            bt.print("\n");
-            bt.print("count : ");
+            bt.spp.print("count : ");
+            bt.spp.print(count);
+            bt.spp.print("\r\n");
         }
     }
 }
