@@ -21,6 +21,10 @@ public:
     /* Initializers */
     void begin (int baud = 38400);
 
+    /* RTX */
+    char read (void);
+    void write (char buf[]);
+
 private:
 
     /*
