@@ -7,7 +7,7 @@
     Kashev Dalmia :: dalmia3 :: kashev.dalmia@gmail.com
     Isaac Dupree  :: dupree2 :: isaac.dupree@gmail.com
 
-    bluetooth.h
+    Bluetooth.h
 */
 
 #include <SoftwareSerial.h>
@@ -32,4 +32,4 @@ private:
     char _name[];
     /* Member Classes */
     SoftwareSerial _spp;
-}
+};
