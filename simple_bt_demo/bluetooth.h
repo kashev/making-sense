@@ -10,13 +10,17 @@
     Bluetooth.h
 */
 
+#ifndef _BLUETOOTH_H_
+#define _BLUETOOTH_H_
+
 #include <SoftwareSerial.h>
+#include <Arduino.h>
 
 class Bluetooth {
 public:
     /* Constructors */
     Bluetooth (uint8_t pinTX, uint8_t pinRX,
-               char name[] = "Arduino Bluetooth Shield");
+               String name  = String("BT Arduino Shield"));
 
     /* Initializers */
     void begin (int baud = 38400);
@@ -34,7 +38,9 @@ private:
     /* Pins */
     uint8_t _pinTX, _pinRX;
     /* Bluetooth Name */
-    char _name[];
+    String _name;
     /* Member Classes */
     SoftwareSerial _spp;
 };
+
+#endif /* _BLUETOOTH_H_ */

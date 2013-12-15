@@ -12,11 +12,11 @@
 
 #include "Bluetooth.h"
 
-Bluetooth::Bluetooth (uint8_t pinRX, uint8_t pinTX, char name[])
+Bluetooth::Bluetooth (uint8_t pinRX, uint8_t pinTX, String name)
 : _pinRX (pinRX),
   _pinTX (pinTX),
-  _name  (name),
-  _spp   (pinRX, _pinTX)
+  _spp   (pinRX, pinTX),
+  _name  (name)
 {
     /* Intentionally Empty */
 }
@@ -27,12 +27,12 @@ Bluetooth::begin (int baud)
     pinMode(_pinRX, INPUT);
     pinMode(_pinTX, OUTPUT);
 
-    _spp.begin(baud)
+    _spp.begin(baud);
 
     /* Initialize BT In Slave Mode */
 
     _spp.print("\r\n+STWMOD=0\r\n");           // slave mode
-    _spp.print("\r\n+STNA=" + _name + "\r\n"); // BT name
+    _spp.print(String("\r\n+STNA=") + _name + String("\r\n")); // BT name
     _spp.print("\r\n+STOAUT=1\r\n");           // allow pairs
     _spp.print("\r\n+STAUTO=0\r\n");           // disallow autoconnect
     delay(2000);
