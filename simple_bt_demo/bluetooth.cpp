@@ -15,7 +15,7 @@
 Bluetooth::Bluetooth (uint8_t pinRX, uint8_t pinTX, String name)
 : _pinRX (pinRX),
   _pinTX (pinTX),
-  _spp   (pinRX, pinTX),
+  spp   (pinRX, pinTX),
   _name  (name)
 {
     /* Intentionally Empty */
@@ -27,34 +27,34 @@ Bluetooth::begin (int baud)
     pinMode(_pinRX, INPUT);
     pinMode(_pinTX, OUTPUT);
 
-    _spp.begin(baud);
+    spp.begin(baud);
 
     /* Initialize BT In Slave Mode */
 
-    _spp.print("\r\n+STWMOD=0\r\n");           // slave mode
-    _spp.print(String("\r\n+STNA=") + _name + String("\r\n")); // BT name
-    _spp.print("\r\n+STOAUT=1\r\n");           // allow pairs
-    _spp.print("\r\n+STAUTO=0\r\n");           // disallow autoconnect
+    spp.print("\r\n+STWMOD=0\r\n");           // slave mode
+    spp.print("\r\n+STOAUT=1\r\n");           // allow pairs
+    spp.print("\r\n+STAUTO=0\r\n");           // disallow autoconnect
+    spp.print(String("\r\n+STNA=") + _name + String("\r\n")); // BT name
     delay(2000);
-    _spp.print("\r\n+INQ=1\r\n");              // make device inquireable
+    spp.print("\r\n+INQ=1\r\n");              // make device inquireable
     delay(2000);
-    _spp.flush();
+    spp.flush();
 }
 
 char
 Bluetooth::read (void)
 {
-    return _spp.read();
+    return spp.read();
 }
 
 void
 Bluetooth::print (String buf)
 {
-    _spp.print(buf);
+    spp.print(buf);
 }
 
 boolean
 Bluetooth::available (void)
 {
-    return _spp.available();
+    return spp.available();
 }

@@ -27,9 +27,9 @@ void setupBlueToothConnection()
 {
     spp.begin(BT_BAUD_RATE);                    // Set BluetoothBee BaudRate to default baud rate 38400
     spp.print("\r\n+STWMOD=0\r\n");             // set the bluetooth work in slave mode
-    spp.print("\r\n+STNA=SeeedBTSlave\r\n");    // set the bluetooth name as "SeeedBTSlave"
     spp.print("\r\n+STOAUT=1\r\n");             // Permit Paired device to connect me
     spp.print("\r\n+STAUTO=0\r\n");             // Auto-connection should be forbidden here
+    spp.print("\r\n+STNA=SeeedBTSlave\r\n");    // set the bluetooth name as "SeeedBTSlave"
     delay(2000);                                // This delay is required.
     spp.print("\r\n+INQ=1\r\n");                // make the slave bluetooth inquirable
     Serial.println("The slave bluetooth is inquirable!");

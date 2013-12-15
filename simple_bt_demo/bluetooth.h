@@ -16,6 +16,8 @@
 #include <SoftwareSerial.h>
 #include <Arduino.h>
 
+#define _BLUETOOTH_BAUD_RATE_ 38400
+
 class Bluetooth {
 public:
     /* Constructors */
@@ -23,12 +25,10 @@ public:
                String name  = String("BT Arduino Shield"));
 
     /* Initializers */
-    void begin (int baud = 38400);
+    void begin (void);
 
-    /* RTX */
-    char read (void);
-    void print (String buf);
-    boolean available (void);
+    /* Member Classes */
+    SoftwareSerial spp;
 
 private:
 
@@ -39,8 +39,6 @@ private:
     uint8_t _pinTX, _pinRX;
     /* Bluetooth Name */
     String _name;
-    /* Member Classes */
-    SoftwareSerial _spp;
 };
 
 #endif /* _BLUETOOTH_H_ */
