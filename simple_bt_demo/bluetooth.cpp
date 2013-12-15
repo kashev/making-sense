@@ -52,3 +52,9 @@ Bluetooth::write (char buf[])
 {
     _spp.write(buf);
 }
+
+boolean
+Bluetooth::available (void)
+{
+    return _spp.available();
+}

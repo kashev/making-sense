@@ -24,6 +24,7 @@ public:
     /* RTX */
     char read (void);
     void write (char buf[]);
+    boolean available (void);
 
 private:
 
