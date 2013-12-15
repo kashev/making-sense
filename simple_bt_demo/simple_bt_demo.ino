@@ -16,8 +16,8 @@
 /*
  * BLUETOOTH
  */
-#define pinBT_RX 8
-#define pinBT_TX 9
+#define pinBT_RX 6
+#define pinBT_TX 7
 #define BT_NAME "Making Sense Arm"
 Bluetooth bt = Bluetooth(pinBT_RX, pinBT_TX, BT_NAME);
 
@@ -30,7 +30,7 @@ static int count = 0;
 void
 setup (void)
 {
-    Serial.begin(9600);
+    // Serial.begin(9600);
     bt.begin();
 }
 
