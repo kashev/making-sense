@@ -13,6 +13,8 @@
 #include <SoftwareSerial.h>
 #include "Bluetooth.h"
 
+#define BAUD_RATE 9600
+
 /*
  * BLUETOOTH
  */
@@ -43,8 +45,6 @@ loop (void)
         {
             r = bt.spp.read();
 
-            bt.spp.print(r);
-
             if (r == 'i')
             {
                 count++;
@@ -57,6 +57,8 @@ loop (void)
             bt.spp.print("count : ");
             bt.spp.print(count);
             bt.spp.print("\r\n");
+
+            bt.spp.flush();
         }
     }
 }
