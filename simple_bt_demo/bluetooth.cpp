@@ -48,9 +48,9 @@ Bluetooth::read (void)
 }
 
 void
-Bluetooth::write (char buf[])
+Bluetooth::print (String buf)
 {
-    _spp.write(buf);
+    _spp.print(buf);
 }
 
 boolean

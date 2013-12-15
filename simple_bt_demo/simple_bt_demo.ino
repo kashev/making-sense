@@ -44,7 +44,7 @@ loop (void)
         {
             r = bt.read();
 
-            bt.write(r);
+            bt.print(String(r));
 
             if (r == 'i')
             {
@@ -55,9 +55,9 @@ loop (void)
                 count --;
             }
 
-            bt.write(count);
-            bt.write("\n");
-            bt.write("count : ");
+            bt.print(String(count));
+            bt.print("\n");
+            bt.print("count : ");
         }
     }
 }

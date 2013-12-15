@@ -27,7 +27,7 @@ public:
 
     /* RTX */
     char read (void);
-    void write (char buf[]);
+    void print (String buf);
     boolean available (void);
 
 private:
