@@ -11,3 +11,6 @@
 *.lai
 *.la
 *.a
+
+# packages - unziped versions aren't kept, zipped versions are.
+packages/*/*
