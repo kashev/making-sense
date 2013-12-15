@@ -46,8 +46,6 @@ void
 setup (void)
 {
     Serial.begin(HW_BAUD_RATE);
-    pinMode(pinBT_RX, INPUT);
-    pinMode(pinBT_TX, OUTPUT);
 
     setupBlueToothConnection();
 
