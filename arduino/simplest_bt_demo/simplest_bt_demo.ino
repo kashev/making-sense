@@ -39,7 +39,7 @@ void setupBlueToothConnection()
 
 
 /*
- * ENERGIA REQUIRED
+ * ARDUINO REQUIRED
  */
 
 void

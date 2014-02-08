@@ -26,7 +26,7 @@ Bluetooth bt = Bluetooth(pinBT_RX, pinBT_TX, BT_NAME);
 static int count = 0;
 
 /*
- * ENERGIA REQUIRED
+ * ARDUINO REQUIRED
  */
 
 void
