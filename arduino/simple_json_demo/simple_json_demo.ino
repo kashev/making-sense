@@ -6,12 +6,13 @@
     Kashev Dalmia :: dalmia3
     Isaac Dupree  :: dupree2
 
-    simple_bt_demo.ino
+    simple_json_demo.ino
 */
 
 // Must include both SoftwareSerial and Bluetooth.h
 #include <SoftwareSerial.h>
 #include "Bluetooth.h"
+#include "aJSON.h"
 
 #define BAUD_RATE 9600
 
