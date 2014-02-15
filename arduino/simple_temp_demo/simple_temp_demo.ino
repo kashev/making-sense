@@ -6,7 +6,7 @@
 	Kashev Dalmia :: dalmia3
 	Isaac Dupree  :: dupree2
 
-	simple_bt_demo.ino
+	simple_temp_demo.ino
 */
 
 /*
