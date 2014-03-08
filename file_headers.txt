@@ -1,14 +1,14 @@
 /*
-    |\/| _ | . _  _   (~ _  _  _ _ 
-    |  |(_||<|| |(_|  _)(/_| |_\(/_
-                  _|               
-    github.com/kashev/making-sense
-
-    Kashev Dalmia :: dalmia3 :: kashev.dalmia@gmail.com
-    Isaac Dupree  :: dupree2 :: isaac.dupree@gmail.com
-
-    filename.extension
-*/
+ *  |\/| _ | . _  _   (~ _  _  _ _ 
+ *  |  |(_||<|| |(_|  _)(/_| |_\(/_
+ *                _|               
+ *  github.com/kashev/making-sense
+ *
+ *  Kashev Dalmia :: dalmia3 :: kashev.dalmia@gmail.com
+ *  Isaac Dupree  :: dupree2 :: isaac.dupree@gmail.com
+ *
+ *  filename.extension
+ */
 
 /*
 Place this header in all files.

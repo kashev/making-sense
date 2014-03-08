@@ -15,5 +15,3 @@
 # packages - unziped versions aren't kept, zipped versions are.
 packages/*/**
 
-# Android
-android/.metadata

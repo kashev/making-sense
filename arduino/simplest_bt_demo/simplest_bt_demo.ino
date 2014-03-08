@@ -1,13 +1,15 @@
 /*
-    |\/| _ | . _  _   (~ _  _  _ _ 
-    |  |(_||<|| |(_|  _)(/_| |_\(/_
-                  _|               
-    
-    Kashev Dalmia :: dalmia3
-    Isaac Dupree  :: dupree2
+ *  |\/| _ | . _  _   (~ _  _  _ _ 
+ *  |  |(_||<|| |(_|  _)(/_| |_\(/_
+ *                _|               
+ *  github.com/kashev/making-sense
+ *
+ *  Kashev Dalmia :: dalmia3 :: kashev.dalmia@gmail.com
+ *  Isaac Dupree  :: dupree2 :: isaac.dupree@gmail.com
+ *
+ *  simplest_bt_demo.ino
+ */
 
-    simplest_bt_demo.ino
-*/
 
 #include <Arduino.h>
 #include <SoftwareSerial.h>
