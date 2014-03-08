@@ -1,18 +1,17 @@
 /*
-    |\/| _ | . _  _   (~ _  _  _ _ 
-    |  |(_||<|| |(_|  _)(/_| |_\(/_
-                  _|               
-    
-    Kashev Dalmia :: dalmia3
-    Isaac Dupree  :: dupree2
-
-    simple_json_demo.ino
-*/
+ *  |\/| _ | . _  _   (~ _  _  _ _ 
+ *  |  |(_||<|| |(_|  _)(/_| |_\(/_
+ *                _|               
+ *  
+ *  Kashev Dalmia :: dalmia3
+ *  Isaac Dupree  :: dupree2
+ *
+ *  making_sense.ino
+ */
 
 // Must include both SoftwareSerial and Bluetooth.h
 #include <SoftwareSerial.h>
 #include "Bluetooth.h"
-#include "aJSON.h"
 
 #define BAUD_RATE 9600
 
