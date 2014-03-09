@@ -10,6 +10,7 @@
     Bluetooth.cpp
 */
 
+#include <SoftwareSerial.h>
 #include "Bluetooth.h"
 
 Bluetooth::Bluetooth (uint8_t pinRX, uint8_t pinTX, String name)

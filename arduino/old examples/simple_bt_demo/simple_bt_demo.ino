@@ -10,6 +10,7 @@
 */
 
 // Must include both SoftwareSerial and Bluetooth.h
+#include <SoftwareSerial.h>
 #include "Bluetooth.h"
 
 #define BAUD_RATE 9600

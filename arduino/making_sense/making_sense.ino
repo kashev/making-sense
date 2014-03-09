@@ -12,9 +12,10 @@
 /*
  * INCLUDES
  */
+#include <SoftwareSerial.h>
 #include "Bluetooth.h"
 #include "aJSON.h"
-
+#include "sensors.h"
 
 /*
  * BLUETOOTH
@@ -26,6 +27,10 @@
 Bluetooth bt = Bluetooth(pinBT_RX, pinBT_TX, BT_NAME);
 
 static volatile int count = 0;
+
+/*
+ * SENSORS
+ */
 
 /*
  * ARDUINO REQUIRED
