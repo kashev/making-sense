@@ -13,9 +13,18 @@
  * INCLUDES
  */
 #include <SoftwareSerial.h>
+#include <Serial.h>
+
 #include "Bluetooth.h"
 #include "aJSON.h"
 #include "sensors.h"
+
+
+int freeRam () {
+  extern int __heap_start, *__brkval; 
+  int v; 
+  return (int) &v - (__brkval == 0 ? (int) &__heap_start : (int) __brkval); 
+}
 
 /*
  * BLUETOOTH
@@ -26,11 +35,46 @@
 #define BT_NAME "Making Sense Arm"
 Bluetooth bt = Bluetooth(pinBT_RX, pinBT_TX, BT_NAME);
 
-static volatile int count = 0;
-
 /*
  * SENSORS
  */
+void
+configureSensorPins (void)
+{
+    /* Set Input/Output Modes */
+}
+/*
+ * readAllSensors
+ *     Returns a stringified JSON Object containing sensor values.
+ */
+char *
+readAllSensors (void)
+{
+    aJsonObject * root = aJson.createObject();
+    aJsonObject * temp = aJson.createObject();
+    aJsonObject * pres = aJson.createObject();
+    aJson.addItemToObject(root, "temp",  temp);
+    aJson.addItemToObject(root, "press", pres);
+    /* FAKE SENSOR DATA */
+    /*
+     * Read Temperature Sensors
+     */
+    aJson.addNumberToObject(temp, "1", readTempSensor(A0));
+    aJson.addNumberToObject(temp, "2", readTempSensor(A1));
+    aJson.addNumberToObject(temp, "3", readTempSensor(A2));
+
+    /*
+     * Read Pressure Sensors
+     */    
+    aJson.addNumberToObject(pres, "1", readPressSensor(A0));
+    aJson.addNumberToObject(pres, "2", readPressSensor(A1));
+    aJson.addNumberToObject(pres, "3", readPressSensor(A2));
+
+    /* return as String */
+    char * r = aJson.print(root);
+    aJson.deleteItem(root);
+    return r;
+}
 
 /*
  * ARDUINO REQUIRED
@@ -39,34 +83,24 @@ static volatile int count = 0;
 void
 setup (void)
 {
+    configureSensorPins();
+    Serial.begin(BAUD_RATE);
     bt.begin();
 }
 
 void
 loop (void)
-{
-    char r;
-    while (true)
-    {
-        if (bt.spp.available())
-        {
-            r = bt.spp.read();
+{   
+    Serial.println(freeRam());
+    char * t = readAllSensors();
+    Serial.print("Sent : ");
+    Serial.println(t);
+    bt.spp.print(t);
+    bt.spp.print("\r\n");
+    bt.spp.flush();
+    /* Required so that the Arduino doesn't run out of Memory */
+    free(t);
 
-            if (r == 'i')
-            {
-                count++;
-            }
-            else if (r == 'd')
-            {
-                count --;
-            }
-
-            bt.spp.print("count : ");
-            bt.spp.print(count);
-            bt.spp.print("\r\n");
-
-            bt.spp.flush();
-        }
-    }
+    delay(1000);
 }
 

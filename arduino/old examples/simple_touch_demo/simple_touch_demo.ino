@@ -33,7 +33,7 @@ float vin;
 void
 loop (void)
 {
-    // sensor realing
+    // sensor reading
     vin = 5.0 * analogRead(pinTouch) / 1024.0;
     
     // printing

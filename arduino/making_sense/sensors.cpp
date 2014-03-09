@@ -25,9 +25,9 @@
  *     voltage between 0 and 5 volts.
  */
 inline float
-d2v (uint16_t d)
+d2v (int16_t d)
 {
-    return 5.0 * d / 1024.0;
+    return (5.0 * (float)d / 1024.0);
 }
 
 /*
@@ -37,7 +37,7 @@ d2v (uint16_t d)
 inline float
 v2c (float v)
 {
-    return (1.8663 - v) / 0.01169;
+    return ((1.8663 - v) / 0.01169);
 }
 
 /*
@@ -48,7 +48,7 @@ v2c (float v)
 inline float
 c2f (float c)
 {
-    return 1.8 * c + 32.0; // 9.0/5.0 * tempC + 32.0
+    return ((1.8 * c) + 32.0); // 9.0/5.0 * tempC + 32.0
 }
 
 /*
@@ -56,9 +56,9 @@ c2f (float c)
  *     Combines conversions: given a digital input, convert to degrees Fahrenheit.
  */
 inline float
-d2f (uint16_t d)
+d2f (int16_t d)
 {
-    return c2f(v2c(d2v(d)));
+    return (c2f(v2c(d2v(d))));
 }
 
 /*
@@ -70,7 +70,7 @@ readTempSensor (uint8_t pin)
 {
     // return d2f(analogRead(pin));
     /* Spoof Sensor Output */
-    return d2f(random(0, 1023));
+    return d2f((int16_t)random(0, 1024));
 }
 
 /*
@@ -83,5 +83,5 @@ readPressSensor (uint8_t pin)
 {
     // return d2v(analogRead(pin));
     /* Spoof Sensor Output */
-    return d2v(random(0, 1023));
+    return d2v((int16_t)random(0, 1024));
 }

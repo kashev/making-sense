@@ -142,11 +142,6 @@ var mmInputStream  = BufferedInputStream(mmSocket.getInputStream(), INPUT_BUF_SI
 /*
  * CREATE UI
  */
-ui.addButton("Increment", 20, 20, 500, 300, function(){
-  var msg = "i\n";
-  mmOutputStream.write(toUTF8Array(msg)); 
-});
-
 
 /*
  * POLL FOR INCOMING DATA
@@ -154,24 +149,29 @@ ui.addButton("Increment", 20, 20, 500, 300, function(){
 var in_packet = "";
 var curr_char = "";
 var prev_char = "";
-util.loop(0, function(){
-  var bytesAvailable = mmInputStream.available();
-  if (bytesAvailable > 0)
+util.loop(1, function(){ // 1 ms for stability
+  if (mmInputStream.available() > 0)
   {
-    // console.log(String.fromCharCode(mmInputStream.read()));
     prev_char = curr_char;
     curr_char = String.fromCharCode(mmInputStream.read());
     in_packet = in_packet.concat(curr_char);
     if (prev_char === "\r" && curr_char === "\n")
     {
-      // end of packet! update UI
-      console.log(in_packet);
-      var obj = JSON.parse(in_packet);
-      console.log(obj);
-      in_packet = ""; // reset packet
+      // end of packet! update UI.
+      try
+      {
+        var obj = JSON.parse(in_packet);
+        console.log(JSON.stringify(obj));
+      }
+      catch (err)
+      {
+        console.log(err.message);
+      }
+      // reset packet
+      in_packet = "";
+      prev_char = "";
+      curr_char = "";
     }
   }
 });
 
-
-// mmSocket.close();
