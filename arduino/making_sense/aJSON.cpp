@@ -39,7 +39,7 @@
 #include <avr/pgmspace.h>
 
 #include "aJSON.h"
-#include "utility/stringbuffer.h"
+#include "stringbuffer.h"
 
 /******************************************************************************
  * Definitions
@@ -62,8 +62,8 @@ aJsonStream::available()
       int ch = this->getch();
       if (ch > 32)
        {
-	 this->ungetch(ch);
-	 return true;
+   this->ungetch(ch);
+   return true;
        }
     }
   return false;
@@ -106,9 +106,9 @@ aJsonStream::readBytes(uint8_t *buffer, size_t len)
     {
       int ch = this->getch();
       if (ch == EOF)
-	{
-	  return i;
-	}
+  {
+    return i;
+  }
       buffer[i] = ch;
     }
   return len;
@@ -238,7 +238,7 @@ aJsonStream::parseNumber(aJsonObject *item)
         in = this->getch();
       }
     while (in >= '0' && in <= '9'); // Number?
-  //end of integer part Ð or isn't it?
+  //end of integer part Ã or isn't it?
   if (!(in == '.' || in == 'e' || in == 'E'))
     {
       item->valueint = i * (int) sign;
@@ -310,7 +310,7 @@ aJsonStream::printFloat(aJsonObject *item)
     {
       double d = item->valuefloat;
       if (d<0.0) {
-	  this->print("-");
+    this->print("-");
           d=-d;
       }
       //print the integer part
@@ -329,7 +329,7 @@ aJsonStream::printFloat(aJsonObject *item)
           //create an int out of it
           unsigned int digit = (unsigned int) fractional_part;
           //print it
-	  this->print(digit, DEC);
+    this->print(digit, DEC);
           //remove it from the number
           fractional_part -= (double)digit;
           n--;
@@ -437,37 +437,37 @@ aJsonStream::printStringPtr(const char *str)
         {
           if ((unsigned char) *ptr > 31 && *ptr != '\"' && *ptr != '\\')
             {
-	      this->print(*ptr);
+        this->print(*ptr);
               ptr++;
             }
           else
             {
-	      this->print('\\');
+        this->print('\\');
               switch (*ptr++)
                 {
               case '\\':
-		this->print('\\');
+    this->print('\\');
                 break;
               case '\"':
-		this->print('\"');
+    this->print('\"');
                 break;
               case '/':
-		this->print('/');
+    this->print('/');
                 break;
               case '\b':
-		this->print('b');
+    this->print('b');
                 break;
               case '\f':
-		this->print('f');
+    this->print('f');
                 break;
               case '\n':
-		this->print('n');
+    this->print('n');
                 break;
               case '\r':
-		this->print('r');
+    this->print('r');
                 break;
               case '\t':
-		this->print('t');
+    this->print('t');
                 break;
               default:
                 break; // eviscerate with prejudice.
@@ -1292,3 +1292,4 @@ aJsonClass::addStringToObject(aJsonObject* object, const char* name,
 //TODO conversion routines btw. float & int types?
 
 aJsonClass aJson;
+

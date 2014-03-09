@@ -9,15 +9,17 @@
  *  making_sense.ino
  */
 
-// Must include both SoftwareSerial and Bluetooth.h
-#include <SoftwareSerial.h>
+/*
+ * INCLUDES
+ */
 #include "Bluetooth.h"
+#include "aJSON.h"
 
-#define BAUD_RATE 9600
 
 /*
  * BLUETOOTH
  */
+#define BAUD_RATE 9600
 #define pinBT_RX 6
 #define pinBT_TX 7
 #define BT_NAME "Making Sense Arm"
@@ -62,3 +64,4 @@ loop (void)
         }
     }
 }
+
