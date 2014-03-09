@@ -10,22 +10,30 @@
  *  making-sense-app.js
  */
 
+
 /*
- * NOTE: This is a powerful debugging tool:
- * console.log(Object.keys(strangeObject));
+ * This is an Android application written in Protocoder Javascript.
+ * More information on the Protocoder website: 
+ *   http://protocoder.org/
+ */
+/*
+ * NOTE: This is a powerful debugging tool for Protocoder:
+ * console.log(Object.keys(aStrangeObject));
  */
 
 /*
  * CONSTANTS
- *   note that 'const' keyword does not work in all javascript settings,
- *   but works in Protocoder (also Chrome, Node.js)
+ *   note that 'const' keyword does not work in all Javascript
+ *   settings (Internet Explorer), but works in Protocoder, as
+ *   well as Chrome, Node.js.
  */
-const TITLE          = "Making Sense";
-const DEVICE_NAME    = "Making Sense Arm";
+const TITLE          = "Making Sense";     // App Title
+const DEVICE_NAME    = "Making Sense Arm"; // Target Device Name
+/* UUIDs are advertised by the device. This one just happens to be known in advance */
 const DEVICE_UUID    = "00001101-0000-1000-8000-00805F9B34FB";
-const GREEN          = [48,  168, 72];
+const INPUT_BUF_SIZE = 256;                // Buffered Input Stream; max packet size
+const GREEN          = [48,  168, 72];     // courtesy of http://bitelabs.org/
 const WHITE          = [255, 255, 255];
-const INPUT_BUF_SIZE = 256;
 
 /*
  * TITLE BAR
@@ -42,23 +50,27 @@ setUpTitleBar(TITLE, WHITE, GREEN);
  *   for writing to Android Bluetooth out stream. Courtesy of:
  *   http://stackoverflow.com/q/12518830/1473320
  */
-
 function toUTF8Array(str) {
   var utf8 = [];
   for (var i=0; i < str.length; i++) {
     var charcode = str.charCodeAt(i);
-    if (charcode < 0x80) utf8.push(charcode);
-    else if (charcode < 0x800) {
+    if (charcode < 0x80)
+    {
+      utf8.push(charcode);
+    }
+    else if (charcode < 0x800)
+    {
       utf8.push(0xc0 | (charcode >> 6), 
                 0x80 | (charcode & 0x3f));
     }
-    else if (charcode < 0xd800 || charcode >= 0xe000) {
+    else if (charcode < 0xd800 || charcode >= 0xe000)
+    {
       utf8.push(0xe0 | (charcode >> 12), 
                 0x80 | ((charcode>>6) & 0x3f), 
                 0x80 | (charcode & 0x3f));
     }
-    else {
-      // let's keep things simple and only handle chars up to U+FFFF...
+    else
+    {
       utf8.push(0xef, 0xbf, 0xbd); // U+FFFE "replacement character"
     }
   }
@@ -76,6 +88,10 @@ var BluetoothSocket  = Packages.android.bluetooth.BluetoothSocket;
 var BufferedInputStream = Packages.java.io.BufferedInputStream;
 var UUID                = Packages.java.util.UUID;
 
+
+/*
+ * CONNECT TO BLUETOOTH TARGET
+ */
 var mBluetoothAdaptder = BluetoothAdapter.getDefaultAdapter();
 
 if (!mBluetoothAdaptder.isEnabled())
@@ -123,18 +139,22 @@ catch (err)
 var mmOutputStream = mmSocket.getOutputStream();
 var mmInputStream  = BufferedInputStream(mmSocket.getInputStream(), INPUT_BUF_SIZE);
 
+/*
+ * CREATE UI
+ */
 ui.addButton("Increment", 20, 20, 500, 300, function(){
   var msg = "i\n";
   mmOutputStream.write(toUTF8Array(msg)); 
 });
 
 
-// poll for incoming data
+/*
+ * POLL FOR INCOMING DATA
+ */
 var in_packet = "";
 var curr_char = "";
 var prev_char = "";
-
-util.loop(1, function(){
+util.loop(0, function(){
   var bytesAvailable = mmInputStream.available();
   if (bytesAvailable > 0)
   {
@@ -144,9 +164,11 @@ util.loop(1, function(){
     in_packet = in_packet.concat(curr_char);
     if (prev_char === "\r" && curr_char === "\n")
     {
-      // end of string
+      // end of packet! update UI
       console.log(in_packet);
-      in_packet = "";
+      var obj = JSON.parse(in_packet);
+      console.log(obj);
+      in_packet = ""; // reset packet
     }
   }
 });
