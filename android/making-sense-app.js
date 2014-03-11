@@ -88,56 +88,59 @@ var BluetoothSocket  = Packages.android.bluetooth.BluetoothSocket;
 var BufferedInputStream = Packages.java.io.BufferedInputStream;
 var UUID                = Packages.java.util.UUID;
 
-
 /*
- * CONNECT TO BLUETOOTH TARGET
+ * bluetoothConnect()
+ *  connect to the target device.
  */
-var mBluetoothAdaptder = BluetoothAdapter.getDefaultAdapter();
-
-if (!mBluetoothAdaptder.isEnabled())
-{
-  ui.toast("Bluetooth Isn't Enabled!")
-  // return;
-  util.stop();
-}
-
-var pairedDevices = mBluetoothAdaptder.getBondedDevices();
-
-var target_id = -1;
-var target_device;
-for (var i = 0; i < pairedDevices.size(); i++)
-{
-  // check for target device
-  if (pairedDevices.toArray()[i].getName().toString().equals(DEVICE_NAME))
+function bluetoothConnect (mmOutputStream, mmInputStream) {
+  var mBluetoothAdaptder = BluetoothAdapter.getDefaultAdapter();
+  
+  if (!mBluetoothAdaptder.isEnabled())
   {
-    target_id = i;
-    target_device = pairedDevices.toArray()[i];
+    ui.toast("Bluetooth Isn't Enabled!")
+    return false;
   }
+  
+  var pairedDevices = mBluetoothAdaptder.getBondedDevices();
+  
+  var target_id = -1;
+  var target_device;
+  for (var i = 0; i < pairedDevices.size(); i++)
+  {
+    // check for target device
+    if (pairedDevices.toArray()[i].getName().toString().equals(DEVICE_NAME))
+    {
+      target_id = i;
+      target_device = pairedDevices.toArray()[i];
+    }
+  }
+  
+  if (target_id < 0)
+  {
+    ui.toast("Target Device Not Found!");
+    return false;
+  }
+  
+  var target_uuid = UUID.fromString(DEVICE_UUID);
+  var mmSocket = target_device.createRfcommSocketToServiceRecord(target_uuid);
+  
+  try
+  {
+    mmSocket.connect();
+  }
+  catch (err)
+  {
+    ui.toast("Something Went Wrong. Reset the Target Device and Try Again");
+    return false;
+  }
+  /* Create I/O Streams */
+  mmOutputStream = mmSocket.getOutputStream();
+  mmInputStream  = BufferedInputStream(mmSocket.getInputStream(), INPUT_BUF_SIZE);
+
+  /* success */
+  return true;
 }
 
-if (target_id < 0)
-{
-  ui.toast("Target Device Not Found!");
-  // return;
-  util.stop();
-}
-
-var target_uuid = UUID.fromString(DEVICE_UUID);
-var mmSocket = target_device.createRfcommSocketToServiceRecord(target_uuid);
-
-try
-{
-  mmSocket.connect();
-}
-catch (err)
-{
-  ui.toast("Something Went Wrong. Reset the Target Device and Try Again");
-  // return;
-  util.stop();
-}
-/* Create I/O Streams */
-var mmOutputStream = mmSocket.getOutputStream();
-var mmInputStream  = BufferedInputStream(mmSocket.getInputStream(), INPUT_BUF_SIZE);
 
 /*
  * CREATE UI
@@ -146,32 +149,37 @@ var mmInputStream  = BufferedInputStream(mmSocket.getInputStream(), INPUT_BUF_SI
 /*
  * POLL FOR INCOMING DATA
  */
-var in_packet = "";
-var curr_char = "";
-var prev_char = "";
-util.loop(1, function(){ // 1 ms for stability
-  if (mmInputStream.available() > 0)
-  {
-    prev_char = curr_char;
-    curr_char = String.fromCharCode(mmInputStream.read());
-    in_packet = in_packet.concat(curr_char);
-    if (prev_char === "\r" && curr_char === "\n")
+var mmOutputStream, mmInputStream;
+if (bluetoothConnect(mmOutputStream, mmInputStream))
+{
+  var in_packet = "";
+  var curr_char = "";
+  var prev_char = "";
+  util.loop(1, function(){ // 1 ms for stability
+    if (mmInputStream.available() > 0)
     {
-      // end of packet! update UI.
-      try
+      prev_char = curr_char;
+      curr_char = String.fromCharCode(mmInputStream.read());
+      in_packet = in_packet.concat(curr_char);
+      if (prev_char === "\r" && curr_char === "\n")
       {
-        var obj = JSON.parse(in_packet);
-        console.log(JSON.stringify(obj));
+        // end of packet! update UI.
+        try
+        {
+          var obj = JSON.parse(in_packet);
+          console.log(JSON.stringify(obj));
+        }
+        catch (err)
+        {
+          console.log(err.message);
+        }
+        // reset packet
+        in_packet = "";
+        prev_char = "";
+        curr_char = "";
       }
-      catch (err)
-      {
-        console.log(err.message);
-      }
-      // reset packet
-      in_packet = "";
-      prev_char = "";
-      curr_char = "";
     }
-  }
-});
+  });
+}
+
 
