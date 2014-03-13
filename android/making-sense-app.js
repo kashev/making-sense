@@ -95,60 +95,9 @@ var BufferedInputStream = Packages.java.io.BufferedInputStream;
 var UUID                = Packages.java.util.UUID;
 
 /*
- * bluetoothConnect()
- *  connect to the target device.
- */
-function bluetoothConnect (mmOutputStream, mmInputStream) {
-  var mBluetoothAdaptder = BluetoothAdapter.getDefaultAdapter();
-  
-  if (!mBluetoothAdaptder.isEnabled())
-  {
-    ui.toast("Bluetooth Isn't Enabled!")
-    return false;
-  }
-  
-  var pairedDevices = mBluetoothAdaptder.getBondedDevices();
-  
-  var target_id = -1;
-  var target_device;
-  for (var i = 0; i < pairedDevices.size(); i++)
-  {
-    // check for target device
-    if (pairedDevices.toArray()[i].getName().toString().equals(DEVICE_NAME))
-    {
-      target_id = i;
-      target_device = pairedDevices.toArray()[i];
-    }
-  }
-  
-  if (target_id < 0)
-  {
-    ui.toast("Target Device Not Found!");
-    return false;
-  }
-  
-  var target_uuid = UUID.fromString(DEVICE_UUID);
-  var mmSocket = target_device.createRfcommSocketToServiceRecord(target_uuid);
-  
-  try
-  {
-    mmSocket.connect();
-  }
-  catch (err)
-  {
-    ui.toast("Something Went Wrong. Reset the Target Device and Try Again");
-    return false;
-  }
-  /* Create I/O Streams */
-  mmOutputStream = mmSocket.getOutputStream();
-  mmInputStream  = BufferedInputStream(mmSocket.getInputStream(), INPUT_BUF_SIZE);
-
-  /* success */
-  return true;
-}
-
-/*
- * COLOR FUNCTIONS
+ * color() - a simple linear RYGCB colormap
+ *     thanks to Roger Serwy & the UIUC ECE 420 course staff
+ *     of ages past for this color mapping.
  */
 // simple linear RYGCB colormap
 function color (val) {
@@ -213,29 +162,20 @@ function color (val) {
 const smR = 30;
 const lgR = 45;
 
-const xP0 = 945; const yP0 = 700;
-const xP1 = 855; const yP1 = 515;
-const xP2 = 725; const yP2 = 400;
-const xP3 = 590; const yP3 = 400;
-const xP4 = 815; const yP4 = 955;
-const xP5 = 710; const yP5 = 855;
-const xP6 = 615; const yP6 = 805;
-const xP7 = 500; const yP7 = 785;
-const xP8 = 150; const yP8 = 770;
-const xP9 = 755; const yP9 = 1090;
-const xPA = 250; const yPA = 1000;
-const xPB = 650; const yPB = 1250;
-const xPC = 550; const yPC = 1300;
-const xPD = 440; const yPD = 1290;
-const xPE = 350; const yPE = 1200;
-
+const xP = [
+  945, 855,  725,  590,  815,  710,  615,  500,
+  150, 755,  250,  650,  550,  440,  350
+];
+const yP = [
+  700, 515,  400,  400,  955,  855,  805,  785,
+  770, 1090, 1000, 1250, 1300, 1290, 1200
+];
 /*
  * CREATE UI
  */
 
 var c_height = ui.screenHeight - TITLEBAR_H;
 var c_width  = ui.screenWidth;
-
 
 var label = ui.addLabel("Pressure Map", 20, 5, c_width, TITLEBAR_H);
 label.textSize = 20;
@@ -251,81 +191,108 @@ var paint    = new Paint();
  *   given a sensor string and a value, paint the 'heat' dot on the appropriate location.
  */
 function drawPSensor (sensor, val) {
-  var s = parseInt(sensor, 16);
+  var idx = parseInt(sensor, 16);
   var RGB = color(val / 1023);
   paint.setColor(new Color().argb(255, RGB.R, RGB.G, RGB.B));
-  
-  switch (s)
+  var r;
+  if (idx > 3)
   {
-    case 0:
-      canvas.getCanvas().drawCircle(xP0, yP0, smR, paint);
-      break;
-    case 1:
-      canvas.getCanvas().drawCircle(xP1, yP1, smR, paint);
-      break;
-    case 2:
-      canvas.getCanvas().drawCircle(xP2, yP2, smR, paint);
-      break;
-    case 3:
-      canvas.getCanvas().drawCircle(xP3, yP3, smR, paint);
-      break;
-    case 4:
-      canvas.getCanvas().drawCircle(xP4, yP4, lgR, paint);
-      break;
-    case 5:
-      canvas.getCanvas().drawCircle(xP5, yP5, lgR, paint);
-      break;
-    case 6:
-      canvas.getCanvas().drawCircle(xP6, yP6, lgR, paint);
-      break;
-    case 7:
-      canvas.getCanvas().drawCircle(xP7, yP7, lgR, paint);
-      break;
-    case 8:
-      canvas.getCanvas().drawCircle(xP8, yP8, lgR, paint);
-      break;
-    case 9:
-      canvas.getCanvas().drawCircle(xP9, yP9, lgR, paint);
-      break;
-    case 10:
-      canvas.getCanvas().drawCircle(xPA, yPA, lgR, paint);
-      break;
-    case 11:
-      canvas.getCanvas().drawCircle(xPB, yPB, lgR, paint);
-      break;
-    case 12:
-      canvas.getCanvas().drawCircle(xPC, yPC, lgR, paint);
-      break;
-    case 13:
-      canvas.getCanvas().drawCircle(xPD, yPD, lgR, paint);
-      break;
-    case 14:
-      canvas.getCanvas().drawCircle(xPE, yPE, lgR, paint);
-      break;
-    default:
-      break;
+    r = smR;
   }
+  else
+  {
+    r = lgR;
+  }
+
+  if (idx < NUM_P_SENSORS)
+  {
+    /* do drawing */
+    canvas.getCanvas().drawCircle(xP[idx], yP[idx], r, paint);
+  } 
 }
 /*
  * TEST PSENSORS
  */
-
 var cur = 0;
-util.loop(1, function(){
+util.loop(0, function(){
   for(var i = 0; i < NUM_P_SENSORS; i++)
   {
     drawPSensor(i.toString(16), cur);
   }
-  cur = (cur + 1) % 1024;
+  cur = (cur + 5) % 1024;
   canvas.invalidate();
 });
 
 /*
- * POLL FOR INCOMING DATA
+ * BLUETOOTH GLOBALS
  */
 var mmOutputStream, mmInputStream;
-if (bluetoothConnect(mmOutputStream, mmInputStream))
+/*
+ * bluetoothConnect()
+ *  connect to the target device.
+ */
+function bluetoothConnect () {
+  var mBluetoothAdaptder = BluetoothAdapter.getDefaultAdapter();
+  
+  if (!mBluetoothAdaptder.isEnabled())
+  {
+    ui.toast("Bluetooth Isn't Enabled!")
+    return false;
+  }
+  
+  var pairedDevices = mBluetoothAdaptder.getBondedDevices();
+  
+  var target_id = -1;
+  var target_device;
+  for (var i = 0; i < pairedDevices.size(); i++)
+  {
+    // check for target device
+    if (pairedDevices.toArray()[i].getName().toString().equals(DEVICE_NAME))
+    {
+      target_id = i;
+      target_device = pairedDevices.toArray()[i];
+    }
+  }
+  
+  if (target_id < 0)
+  {
+    ui.toast("Target Device Not Found!");
+    return false;
+  }
+  
+  var target_uuid = UUID.fromString(DEVICE_UUID);
+  var mmSocket = target_device.createRfcommSocketToServiceRecord(target_uuid);
+  
+  try
+  {
+    mmSocket.connect();
+  }
+  catch (err)
+  {
+    ui.toast("Something Went Wrong. Reset the Target Device and Try Again");
+    return false;
+  }
+  /* Create I/O Streams */
+  var mmOutputStream = mmSocket.getOutputStream();
+  var mmInputStream  = BufferedInputStream(mmSocket.getInputStream(), INPUT_BUF_SIZE);
+
+  /* success */
+  return {
+    result    : true,
+    outstream : mmOutputStream,
+    instream  : mmInputStream
+  };
+}
+
+
+/*
+ * POLL FOR INCOMING DATA
+ */
+var streams = bluetoothConnect()
+if (streams.result)
 {
+  var mmInputStream  = streams.instream;
+  var mmOutputStream = streams.outstream;
   var in_packet = "";
   var curr_char = "";
   var prev_char = "";
