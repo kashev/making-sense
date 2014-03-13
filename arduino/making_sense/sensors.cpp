@@ -78,10 +78,10 @@ readTempSensor (uint8_t pin)
  *     given a pin, reads it, and returns a voltage corrosponding to a
  *     read voltage between 0.0 and 5.0.
  */
-float
+int16_t
 readPressSensor (uint8_t pin)
 {
-    // return d2v(analogRead(pin));
+    // return (int16_t)analogRead(pin);
     /* Spoof Sensor Output */
-    return d2v((int16_t)random(0, 1024));
+    return ((uint16_t)random(0, 1024));
 }

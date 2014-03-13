@@ -27,8 +27,8 @@ inline float d2v(int16_t d);
 inline float v2c(float v);
 inline float c2f(float c);
 inline float d2f(int16_t d);
-
 float readTempSensor  (uint8_t pin);
-float readPressSensor (uint8_t pin);
+
+uint16_t readPressSensor (uint8_t pin);
 
 #endif /* _SENSORS_H_ */
