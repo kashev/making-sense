@@ -75,13 +75,15 @@ readTempSensor (uint8_t pin)
 
 /*
  * readPressSensor
- *     given a pin, reads it, and returns a voltage corrosponding to a
- *     read voltage between 0.0 and 5.0.
+ *     given a pin, reads it, and returns a digital voltage between
+ *     1023. This value is returned as an int for convenience of use
+ *     with the aJSON library. This voltage is only used as a
+ *     relative difference;
  */
-int16_t
+int
 readPressSensor (uint8_t pin)
 {
-    // return (int16_t)analogRead(pin);
+    // return (int)analogRead(pin);
     /* Spoof Sensor Output */
-    return ((uint16_t)random(0, 1024));
+    return ((int)random(0, 1024));
 }
