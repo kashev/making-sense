@@ -15,3 +15,4 @@
 # packages - unziped versions aren't kept, zipped versions are.
 packages/*/**
 
+**/Thumbs.db
