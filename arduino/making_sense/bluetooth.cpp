@@ -32,12 +32,14 @@ Bluetooth::begin (void)
 
     /* Initialize BT In Slave Mode */
 
-    spp.print("\r\n+STWMOD=0\r\n");           // slave mode
-    spp.print("\r\n+STOAUT=1\r\n");           // allow pairs
-    spp.print("\r\n+STAUTO=0\r\n");           // disallow autoconnect
-    spp.print(String("\r\n+STNA=") + _name + String("\r\n")); // BT name
-    delay(2000);
-    spp.print("\r\n+INQ=1\r\n");              // make device inquireable
+    spp.print("\r\n+STWMOD=0\r\n"); /* use slave mode */
+    spp.print("\r\n+STOAUT=1\r\n"); /* allow pairs */
+    spp.print("\r\n+STAUTO=0\r\n"); /* don't allow autoconnect */
+    spp.print(String("\r\n+STNA=")  /* set bluetooth name */
+            + _name
+            + String("\r\n"));
+    delay(2000); /* requisite wait */
+    spp.print("\r\n+INQ=1\r\n");    /* make inquirable */
     delay(2000);
     spp.flush();
 }
