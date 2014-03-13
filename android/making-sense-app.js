@@ -36,6 +36,8 @@ const GREEN          = [48,  168, 72];     // courtesy of http://bitelabs.org/
 const WHITE          = [255, 255, 255];
 const TITLEBAR_H     = 220;                // determined experimentally
 
+const NUM_P_SENSORS  = 15;
+
 /*
  * TITLE BAR
  */
@@ -145,6 +147,47 @@ function bluetoothConnect (mmOutputStream, mmInputStream) {
   return true;
 }
 
+/*
+ * COLOR FUNCTIONS
+ */
+// simple linear RYGCB colormap
+function color (val) {
+  var r, g, b = 0;
+
+  if (val <= 0.25)
+  {
+    r = 0;
+    b = 255;
+    g = Math.round(4*val*255);
+  }
+  else if (val <= 0.5)
+  {
+    r = 0;
+    g = 255;
+    b = Math.round((1-4*(val-0.25))*255);
+  }
+  else if(val <= 0.75)
+  {
+    g = 255;
+    b = 0;
+    r = Math.round(4*(val-0.5)*255);
+  }
+  else
+  {
+    r = 255;
+    b = 0;
+    g = Math.round((1-4*(val-0.75))*255);
+  }
+
+  var RGB =  {
+    R:r, 
+    G:g,
+    B:b
+  };
+
+  return RGB;
+}
+
 
 /*
  * SENSOR LOCATIONS
@@ -189,34 +232,93 @@ const xPE = 350; const yPE = 1200;
 /*
  * CREATE UI
  */
+
 var c_height = ui.screenHeight - TITLEBAR_H;
 var c_width  = ui.screenWidth;
+
+
+var label = ui.addLabel("Pressure Map", 20, 5, c_width, TITLEBAR_H);
+label.textSize = 20;
+label.textAlignment = 4;
 
 ui.backgroundImage("righthand.png");
 
 var canvas   = ui.addCanvas(0, 0, c_width, c_height);
 var paint    = new Paint();
 
-paint.setColor(new Color().argb(255, 255, 0, 0));
+/*
+ * drawPSensor
+ *   given a sensor string and a value, paint the 'heat' dot on the appropriate location.
+ */
+function drawPSensor (sensor, val) {
+  var s = parseInt(sensor, 16);
+  var RGB = color(val / 1023);
+  paint.setColor(new Color().argb(255, RGB.R, RGB.G, RGB.B));
+  
+  switch (s)
+  {
+    case 0:
+      canvas.getCanvas().drawCircle(xP0, yP0, smR, paint);
+      break;
+    case 1:
+      canvas.getCanvas().drawCircle(xP1, yP1, smR, paint);
+      break;
+    case 2:
+      canvas.getCanvas().drawCircle(xP2, yP2, smR, paint);
+      break;
+    case 3:
+      canvas.getCanvas().drawCircle(xP3, yP3, smR, paint);
+      break;
+    case 4:
+      canvas.getCanvas().drawCircle(xP4, yP4, lgR, paint);
+      break;
+    case 5:
+      canvas.getCanvas().drawCircle(xP5, yP5, lgR, paint);
+      break;
+    case 6:
+      canvas.getCanvas().drawCircle(xP6, yP6, lgR, paint);
+      break;
+    case 7:
+      canvas.getCanvas().drawCircle(xP7, yP7, lgR, paint);
+      break;
+    case 8:
+      canvas.getCanvas().drawCircle(xP8, yP8, lgR, paint);
+      break;
+    case 9:
+      canvas.getCanvas().drawCircle(xP9, yP9, lgR, paint);
+      break;
+    case 10:
+      canvas.getCanvas().drawCircle(xPA, yPA, lgR, paint);
+      break;
+    case 11:
+      canvas.getCanvas().drawCircle(xPB, yPB, lgR, paint);
+      break;
+    case 12:
+      canvas.getCanvas().drawCircle(xPC, yPC, lgR, paint);
+      break;
+    case 13:
+      canvas.getCanvas().drawCircle(xPD, yPD, lgR, paint);
+      break;
+    case 14:
+      canvas.getCanvas().drawCircle(xPE, yPE, lgR, paint);
+      break;
+    default:
+      break;
+  }
+}
+/*
+ * TEST PSENSORS
+ */
 
-canvas.getCanvas().drawCircle(xP0, yP0, smR, paint);
-canvas.getCanvas().drawCircle(xP1, yP1, smR, paint);
-canvas.getCanvas().drawCircle(xP2, yP2, smR, paint);
-canvas.getCanvas().drawCircle(xP3, yP3, smR, paint);
-
-canvas.getCanvas().drawCircle(xP4, yP4, lgR, paint);
-canvas.getCanvas().drawCircle(xP5, yP5, lgR, paint);
-canvas.getCanvas().drawCircle(xP6, yP6, lgR, paint);
-canvas.getCanvas().drawCircle(xP7, yP7, lgR, paint);
-canvas.getCanvas().drawCircle(xP8, yP8, lgR, paint);
-canvas.getCanvas().drawCircle(xP8, yP8, lgR, paint);
-canvas.getCanvas().drawCircle(xP9, yP9, lgR, paint);
-canvas.getCanvas().drawCircle(xPA, yPA, lgR, paint);
-canvas.getCanvas().drawCircle(xPB, yPB, lgR, paint);
-canvas.getCanvas().drawCircle(xPC, yPC, lgR, paint);
-canvas.getCanvas().drawCircle(xPD, yPD, lgR, paint);
-canvas.getCanvas().drawCircle(xPE, yPE, lgR, paint);
-
+var cur = 0;
+util.loop(1, function(){
+  for(var i = 0; i < NUM_P_SENSORS; i++)
+  {
+    drawPSensor(i.toString(16), cur);
+  }
+  cur = (cur + 1) % 1024;
+  canvas.invalidate();
+});
 
 /*
  * POLL FOR INCOMING DATA
