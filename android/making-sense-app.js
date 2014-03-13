@@ -47,6 +47,7 @@ function setUpTitleBar (title, text, background) {
   ui.setTitle          (title);
 }
 setUpTitleBar(TITLE, WHITE, GREEN);
+device.screenAlwaysOn();
 
 /*
  * toUTF8Array
@@ -161,7 +162,7 @@ function color (val) {
 
 const smR = 30;
 const lgR = 45;
-
+/* [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, A, B, C, D, E] */
 const xP = [
   945, 855,  725,  590,  815,  710,  615,  500,
   150, 755,  250,  650,  550,  440,  350
@@ -170,10 +171,10 @@ const yP = [
   700, 515,  400,  400,  955,  855,  805,  785,
   770, 1090, 1000, 1250, 1300, 1290, 1200
 ];
+
 /*
  * CREATE UI
  */
-
 var c_height = ui.screenHeight - TITLEBAR_H;
 var c_width  = ui.screenWidth;
 
@@ -183,11 +184,14 @@ label.textAlignment = 4;
 
 ui.backgroundImage("righthand.png");
 
+/*
+ * Painting Globals
+ */
 var canvas   = ui.addCanvas(0, 0, c_width, c_height);
 var paint    = new Paint();
 
 /*
- * drawPSensor
+ * drawPSensor()
  *   given a sensor string and a value, paint the 'heat' dot on the appropriate location.
  */
 function drawPSensor (sensor, val) {
@@ -211,17 +215,30 @@ function drawPSensor (sensor, val) {
   } 
 }
 /*
+ * drawPSensors()
+ *   given a JSON object with keys 0-E,
+ */
+function drawPSensors (sensors) {
+  for (var key in sensors)
+  {
+    drawPSensor(key, sensors[key]);
+    canvas.invalidate();
+  }
+}
+/*
  * TEST PSENSORS
  */
-var cur = 0;
-util.loop(0, function(){
-  for(var i = 0; i < NUM_P_SENSORS; i++)
-  {
-    drawPSensor(i.toString(16), cur);
-  }
-  cur = (cur + 5) % 1024;
-  canvas.invalidate();
-});
+// var cur = 0;
+// util.loop(0, function(){
+//   for(var i = 0; i < NUM_P_SENSORS; i++)
+//   {
+//     drawPSensor(i.toString(16), cur);
+//   }
+//   cur = (cur + 5) % 1024;
+//   canvas.invalidate();
+// });
+
+
 
 /*
  * BLUETOOTH GLOBALS
@@ -269,7 +286,8 @@ function bluetoothConnect () {
   }
   catch (err)
   {
-    ui.toast("Something Went Wrong. Reset the Target Device and Try Again");
+    ui.toast("Something went wrong durring connecting. " +
+             "Reset the Target Device and Try Again");
     return false;
   }
   /* Create I/O Streams */
@@ -297,7 +315,7 @@ if (streams.result)
   var curr_char = "";
   var prev_char = "";
   util.loop(1, function(){ // 1 ms for stability
-    if (mmInputStream.available() > 0)
+    while (mmInputStream.available() > 0)
     {
       prev_char = curr_char;
       curr_char = String.fromCharCode(mmInputStream.read());
@@ -309,6 +327,7 @@ if (streams.result)
         {
           var obj = JSON.parse(in_packet);
           console.log(JSON.stringify(obj));
+          drawPSensors(obj["P"]);
         }
         catch (err)
         {
