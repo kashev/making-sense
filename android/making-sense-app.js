@@ -161,15 +161,14 @@ function color (val) {
      \B CD E/      \E DC B/
       |    |        |    |
 */
-
-const smR = 30;
-const lgR = 45;
+const SM_R = 30;
+const LG_R = 45;
 /* [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, A, B, C, D, E] */
-const xP = [
+const X_P = [
   945, 855,  725,  590,  815,  710,  615,  500,
   150, 755,  250,  650,  550,  440,  350
 ];
-const yP = [
+const Y_P = [
   700, 515,  400,  400,  955,  855,  805,  785,
   770, 1090, 1000, 1250, 1300, 1290, 1200
 ];
@@ -246,17 +245,17 @@ function drawPSensor (sensor, val) {
   var r;
   if (idx > 3)
   {
-    r = lgR;
+    r = LG_R;
   }
   else
   {
-    r = smR;
+    r = SM_R;
   }
 
   if (idx < NUM_P_SENSORS)
   {
     /* do drawing */
-    canvas.getCanvas().drawCircle(xP[idx], yP[idx], r, paint);
+    canvas.getCanvas().drawCircle(X_P[idx], Y_P[idx], r, paint);
   }
 }
 /*
