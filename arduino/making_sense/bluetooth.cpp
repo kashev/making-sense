@@ -1,14 +1,13 @@
 /*
-    |\/| _ | . _  _   (~ _  _  _ _ 
-    |  |(_||<|| |(_|  _)(/_| |_\(/_
-                  _|               
-    github.com/kashev/making-sense
-
-    Kashev Dalmia :: dalmia3 :: kashev.dalmia@gmail.com
-    Isaac Dupree  :: dupree2 :: isaac.dupree@gmail.com
-
-    Bluetooth.cpp
-*/
+ *  |\/| _ | . _  _   (~ _  _  _ _ 
+ *  |  |(_||<|| |(_|  _)(/_| |_\(/_
+ *                _|               
+ *  github.com/kashev/making-sense
+ *
+ *  Kashev Dalmia :: kashev.dalmia@gmail.com
+ *
+ *  Bluetooth.cpp
+ */
 
 #include <SoftwareSerial.h>
 #include "Bluetooth.h"
