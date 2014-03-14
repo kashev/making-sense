@@ -4,12 +4,10 @@
  *                _|               
  *  github.com/kashev/making-sense
  *
- *  Kashev Dalmia :: dalmia3 :: kashev.dalmia@gmail.com
- *  Isaac Dupree  :: dupree2 :: isaac.dupree@gmail.com
+ *  Kashev Dalmia :: kashev.dalmia@gmail.com
  *
  *  making-sense-app.js
  */
-
 
 /*
  * This is an Android application written in Protocoder Javascript.
@@ -66,8 +64,9 @@ var BluetoothAdapter = Packages.android.bluetooth.BluetoothAdapter;
 var BluetoothDevice  = Packages.android.bluetooth.BluetoothDevice;
 var BluetoothSocket  = Packages.android.bluetooth.BluetoothSocket;
 /* ANDROID DRAWING */
-var Paint = Packages.android.graphics.Paint;
-var Color = Packages.android.graphics.Color;
+var Paint      = Packages.android.graphics.Paint;
+var Color      = Packages.android.graphics.Color;
+var PorterDuff = Packages.android.graphics.PorterDuff;
 /* OTHER JAVA LIBRARIES */
 var BufferedInputStream = Packages.java.io.BufferedInputStream;
 var UUID                = Packages.java.util.UUID;
@@ -135,7 +134,8 @@ const NUM_T_SENSORS  = 5;
 */
 const SM_R = 30;
 const LG_R = 45;
-/* [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, A, B, C, D, E] */
+/* [0, 1, 2, 3, 4, 5, 6, 7,
+    8, 9, A, B, C, D, E] */
 const X_P = [
   945, 855,  725,  590,  815,  710,  615,  500,
   150, 755,  250,  650,  550,  440,  350
@@ -151,21 +151,21 @@ const Y_P = [
        BACK         PALM 
    temperature   temperature
        _.-._       _.-._
-     _| | | |     | | | |_
+     _|3|2|1|     |1|2|3|_
+    |4| | | |     | | | |4|
     | | | | |     | | | | |
-    | | | | |     | | | | |
-    | _ -   | _  _|  '-._ |
-    ; .-'.-'/ / \`\`-.'-._;
-    |   '    /   \    '   |
+    |       | _  _|  '-._ |
+    ;       /0/ \0\`-.'-._;
+    |        /   \    '   |
      \      /     \  .`  /
       |    |       |    |
 */
-
-const T_H = 45;
-const T_W = 30;
+/* coordinates for rectangles are top left corners */
+const T_H = 75;
+const T_W = 50;
 /* [0, 1, 2, 3, 4] */
-const X_T = [0, 0, 0, 0, 0];
-const Y_T = [0, 0, 0, 0, 0];
+const X_T = [930, 475, 330, 200, 105];
+const Y_T = [720, 390, 385, 485, 670];
 
 /*
  * CREATE UI
@@ -217,6 +217,7 @@ device.screenAlwaysOn();
 /*
  * GLOBAL SWITCH VARS
  */
+var on_pressure = true;
 var label = ui.addLabel(PRESSURE_LABEL, 20, 20, C_WIDTH, TITLEBAR_H);
 /* INITIALIZE */
 label.textSize = TEXT_SIZE;
@@ -236,12 +237,16 @@ var sbutton = ui.addToggle(
     if (checked)
     {
       /* TEMPERATURE */
+      on_pressure = false;
+      canvas.getCanvas().drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
       ui.backgroundImage(LEFTHAND_IMG);
       label.text = TEMPERATURE_LABEL;
     }
     else
     {
       /* PRESSURE */
+      on_pressure = true;
+      canvas.getCanvas().drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
       ui.backgroundImage(RIGHTHAND_IMG);
       label.text = PRESSURE_LABEL;
     }
@@ -250,17 +255,17 @@ var sbutton = ui.addToggle(
 sbutton.textOn  = PRESSURE_BUTTON;
 sbutton.textOff = TEMPERATURE_BUTTON;
 
-
 /*
  * drawPSensor()
- *   given a sensor string and a value, paint the 'heat' dot on the appropriate location.
+ *   given a sensor string and a value,
+ *   paint the 'heat' dot on the appropriate location.
  */
 function drawPSensor (sensor, val) {
   var idx = parseInt(sensor, 16);
   var RGB = color(val / 1023);
   paint.setColor(new Color().argb(255, RGB.R, RGB.G, RGB.B));
   var r;
-  if (idx > 3)
+  if (idx > 3 && idx !== 8)
   {
     r = LG_R;
   }
@@ -269,35 +274,78 @@ function drawPSensor (sensor, val) {
     r = SM_R;
   }
 
-  if (idx < NUM_P_SENSORS)
+  if (idx < NUM_P_SENSORS && idx >= 0)
   {
     /* do drawing */
     canvas.getCanvas().drawCircle(X_P[idx], Y_P[idx], r, paint);
   }
 }
+
+/*
+ * drawPsensor()
+ *   given a sensor string and a value (Temperature,
+ *   paint the heat rectangle on the appropriate location.
+ */
+/* Max and Min Temperatures */
+const MIN_TEMP = 0;
+const MAX_TEMP = 150;
+const WARN_MIN_TEMP = 36;
+const WARN_MAX_TEMP = 100;
+
+function tfix (t) {
+  var r = t;
+
+  if (r < MIN_TEMP)
+  {
+    r = MIN_TEMP;
+  }
+  else if (r > MAX_TEMP)
+  {
+    r = MAX_TEMP;
+  }
+
+  var OldRange = 150.0;
+  var NewRange = 1.0;
+
+  return (r / 150.0);
+}
+
+function drawTSensor (sensor, val) {
+  var idx = parseInt(sensor, 16);
+  var RGB = color(tfix(val));
+  paint.setColor(new Color().argb(255, RGB.R, RGB.G, RGB.B));
+  if (idx < NUM_T_SENSORS && idx >= 0)
+  {
+    /* do drawing */
+    canvas.getCanvas().drawRect(X_T[idx],       Y_T[idx],
+                                X_T[idx] + T_W, Y_T[idx] + T_H,
+                                paint);
+  }
+}
+
 /*
  * drawPSensors()
- *   given a JSON object with keys 0-E,
+ *   given a JSON object with keys 0-E, draw on the sensor dots
  */
 function drawPSensors (sensors) {
   for (var key in sensors)
   {
     drawPSensor(key, sensors[key]);
-    canvas.invalidate();
   }
+    canvas.invalidate();
 }
+
 /*
- * TEST PSENSORS
+ * drawTSensors()
+ *   given a JSON object with keys 0-4, draw on the sensors squares
  */
-// var cur = 0;
-// util.loop(0, function(){
-//   for(var i = 0; i < NUM_P_SENSORS; i++)
-//   {
-//     drawPSensor(i.toString(16), cur);
-//   }
-//   cur = (cur + 5) % 1024;
-//   canvas.invalidate();
-// });
+function drawTSensors (sensors) {
+  for (var key in sensors)
+  {
+    drawTSensor(key, sensors[key]);
+  }
+    canvas.invalidate();
+}
 
 
 /*
@@ -306,7 +354,7 @@ function drawPSensors (sensors) {
 /*
  * BLUETOOTH CONSTANTS
  */
-const DEVICE_NAME    = "Making Sense Arm"; // Target Device Name
+const DEVICE_NAME    = "Making Sense Gloves"; // Target Device Name
 /* UUIDs are advertised by the device. This one just happens to be known in advance */
 const DEVICE_UUID    = "00001101-0000-1000-8000-00805F9B34FB";
 const INPUT_BUF_SIZE = 256;                // Buffered Input Stream; max packet size
@@ -398,7 +446,14 @@ if (streams.result)
         {
           var obj = JSON.parse(in_packet);
           console.log(JSON.stringify(obj));
-          drawPSensors(obj.P);
+          if (on_pressure)
+          {
+            drawPSensors(obj.P);
+          }
+          else
+          {
+            drawTSensors(obj.T);
+          }
         }
         catch (err)
         {
