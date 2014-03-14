@@ -37,6 +37,7 @@ const WHITE          = [255, 255, 255];
 const TITLEBAR_H     = 220;                // determined experimentally
 
 const NUM_P_SENSORS  = 15;
+const NUM_T_SENSORS  = 5;
 
 /*
  * TITLE BAR
@@ -46,6 +47,7 @@ function setUpTitleBar (title, text, background) {
   ui.setTitleBgColor   (background[0], background[1], background[2]);
   ui.setTitle          (title);
 }
+/* Initialization */
 setUpTitleBar(TITLE, WHITE, GREEN);
 device.screenAlwaysOn();
 
@@ -175,20 +177,63 @@ const yP = [
 /*
  * CREATE UI
  */
-var c_height = ui.screenHeight - TITLEBAR_H;
-var c_width  = ui.screenWidth;
-
-var label = ui.addLabel("Pressure Map", 20, 5, c_width, TITLEBAR_H);
-label.textSize = 20;
-label.textAlignment = 4;
-
-ui.backgroundImage("righthand.png");
+/*
+ * UI CONSTANTS
+ */
+const C_HEIGHT = ui.screenHeight - TITLEBAR_H;
+const C_WIDTH  = ui.screenWidth;
+const PRESSURE_LABEL     = "Pressure Map (Right Hand)";
+const TEMPERATURE_LABEL  = "Temperature Map (Left Hand)";
+const PRESSURE_BUTTON    = "Show Pressure";
+const TEMPERATURE_BUTTON = "Show Temperature";
+const RIGHTHAND_IMG = "righthand.png";
+const LEFTHAND_IMG  = "lefthand.png";
+const TEXT_SIZE     = 25;
+const BUTTON_SIZE   = 200;
 
 /*
- * Painting Globals
+ * UI GLOBALS
  */
-var canvas   = ui.addCanvas(0, 0, c_width, c_height);
+var canvas   = ui.addCanvas(0, 0, C_WIDTH, C_HEIGHT);
 var paint    = new Paint();
+
+/*
+ * GLOBAL SWITCH VARS
+ */
+var label = ui.addLabel(PRESSURE_LABEL, 20, 20, C_WIDTH, TITLEBAR_H);
+/* INITIALIZE */
+label.textSize = TEXT_SIZE;
+ui.backgroundImage(RIGHTHAND_IMG);
+
+/*
+ * CREATE SWITCHING TOGGLE
+ */
+var sbutton = ui.addToggle(
+  TEMPERATURE_BUTTON,
+  0,
+  C_HEIGHT - BUTTON_SIZE,
+  C_WIDTH,
+  BUTTON_SIZE,
+  false,
+  function(checked){
+    if (checked)
+    {
+      /* TEMPERATURE */
+      ui.backgroundImage(LEFTHAND_IMG);
+      label.text = TEMPERATURE_LABEL;
+    }
+    else
+    {
+      /* PRESSURE */
+      ui.backgroundImage(RIGHTHAND_IMG);
+      label.text = PRESSURE_LABEL;
+    }
+  });
+/* CONFIGURE TOGGLE */
+sbutton.textOn  = PRESSURE_BUTTON;
+sbutton.textOff = TEMPERATURE_BUTTON;
+
+
 
 /*
  * drawPSensor()
@@ -201,18 +246,18 @@ function drawPSensor (sensor, val) {
   var r;
   if (idx > 3)
   {
-    r = smR;
+    r = lgR;
   }
   else
   {
-    r = lgR;
+    r = smR;
   }
 
   if (idx < NUM_P_SENSORS)
   {
     /* do drawing */
     canvas.getCanvas().drawCircle(xP[idx], yP[idx], r, paint);
-  } 
+  }
 }
 /*
  * drawPSensors()
@@ -237,8 +282,6 @@ function drawPSensors (sensors) {
 //   cur = (cur + 5) % 1024;
 //   canvas.invalidate();
 // });
-
-
 
 /*
  * BLUETOOTH GLOBALS
@@ -286,7 +329,8 @@ function bluetoothConnect () {
   }
   catch (err)
   {
-    ui.toast("Something went wrong durring connecting. " +
+    console.log(err.message);
+    ui.toast("Something went wrong during connecting.\n" +
              "Reset the Target Device and Try Again");
     return false;
   }
@@ -341,5 +385,4 @@ if (streams.result)
     }
   });
 }
-
 
