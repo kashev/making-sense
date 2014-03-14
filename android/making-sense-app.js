@@ -22,34 +22,8 @@
  */
 
 /*
- * CONSTANTS
- *   note that 'const' keyword does not work in all Javascript
- *   settings (Internet Explorer), but works in Protocoder, as
- *   well as Chrome, Node.js.
+ * HELPER FUNCTIONS
  */
-const TITLE          = "Making Sense";     // App Title
-const DEVICE_NAME    = "Making Sense Arm"; // Target Device Name
-/* UUIDs are advertised by the device. This one just happens to be known in advance */
-const DEVICE_UUID    = "00001101-0000-1000-8000-00805F9B34FB";
-const INPUT_BUF_SIZE = 256;                // Buffered Input Stream; max packet size
-const GREEN          = [48,  168, 72];     // courtesy of http://bitelabs.org/
-const WHITE          = [255, 255, 255];
-const TITLEBAR_H     = 220;                // determined experimentally
-
-const NUM_P_SENSORS  = 15;
-const NUM_T_SENSORS  = 5;
-
-/*
- * TITLE BAR
- */
-function setUpTitleBar (title, text, background) {
-  ui.setTitleTextColor (text[0], text[1], text[2]);
-  ui.setTitleBgColor   (background[0], background[1], background[2]);
-  ui.setTitle          (title);
-}
-/* Initialization */
-setUpTitleBar(TITLE, WHITE, GREEN);
-device.screenAlwaysOn();
 
 /*
  * toUTF8Array
@@ -83,6 +57,7 @@ function toUTF8Array(str) {
   return utf8;
 }
 
+
 /*
  * IMPORT JAVA LIBRARIES
  */
@@ -102,7 +77,6 @@ var UUID                = Packages.java.util.UUID;
  *     thanks to Roger Serwy & the UIUC ECE 420 course staff
  *     of ages past for this color mapping.
  */
-// simple linear RYGCB colormap
 function color (val) {
   var r, g, b = 0;
 
@@ -131,20 +105,18 @@ function color (val) {
     g = Math.round((1-4*(val-0.75))*255);
   }
 
-  var RGB =  {
-    R:r, 
-    G:g,
-    B:b
-  };
+  var RGB = { R:r, G:g, B:b };
 
   return RGB;
 }
 
-
 /*
- * SENSOR LOCATIONS
+ * SENSORS
+ *   hand maps thanks to
+ *   http://www.geocities.com/spunk1111/bodypart.htm#
  */
-
+const NUM_P_SENSORS  = 15;
+const NUM_T_SENSORS  = 5;
 /*
  * PRESSURE
  */
@@ -172,6 +144,28 @@ const Y_P = [
   700, 515,  400,  400,  955,  855,  805,  785,
   770, 1090, 1000, 1250, 1300, 1290, 1200
 ];
+/*
+ * TEMPERATURE
+ */
+/*
+       BACK         PALM 
+   temperature   temperature
+       _.-._       _.-._
+     _| | | |     | | | |_
+    | | | | |     | | | | |
+    | | | | |     | | | | |
+    | _ -   | _  _|  '-._ |
+    ; .-'.-'/ / \`\`-.'-._;
+    |   '    /   \    '   |
+     \      /     \  .`  /
+      |    |       |    |
+*/
+
+const T_H = 45;
+const T_W = 30;
+/* [0, 1, 2, 3, 4] */
+const X_T = [0, 0, 0, 0, 0];
+const Y_T = [0, 0, 0, 0, 0];
 
 /*
  * CREATE UI
@@ -179,6 +173,18 @@ const Y_P = [
 /*
  * UI CONSTANTS
  */
+/*
+ * CONSTANTS
+ *   note that 'const' keyword does not work in all Javascript
+ *   settings (Internet Explorer), but works in Protocoder, as
+ *   well as Chrome, Node.js.
+ */
+
+const TITLE          = "Making Sense";     // App Title
+const TITLEBAR_H     = 220;                // determined experimentally
+const GREEN          = [48,  168, 72];     // courtesy of http://bitelabs.org/
+const WHITE          = [255, 255, 255];
+
 const C_HEIGHT = ui.screenHeight - TITLEBAR_H;
 const C_WIDTH  = ui.screenWidth;
 const PRESSURE_LABEL     = "Pressure Map (Right Hand)";
@@ -196,6 +202,18 @@ const BUTTON_SIZE   = 200;
 var canvas   = ui.addCanvas(0, 0, C_WIDTH, C_HEIGHT);
 var paint    = new Paint();
 
+/*
+ * TITLE BAR
+ */
+function setUpTitleBar (title, text, background) {
+  ui.setTitleTextColor (text[0], text[1], text[2]);
+  ui.setTitleBgColor   (background[0], background[1], background[2]);
+  ui.setTitle          (title);
+}
+
+/* Initialization */
+setUpTitleBar(TITLE, WHITE, GREEN);
+device.screenAlwaysOn();
 /*
  * GLOBAL SWITCH VARS
  */
@@ -231,7 +249,6 @@ var sbutton = ui.addToggle(
 /* CONFIGURE TOGGLE */
 sbutton.textOn  = PRESSURE_BUTTON;
 sbutton.textOff = TEMPERATURE_BUTTON;
-
 
 
 /*
@@ -282,6 +299,17 @@ function drawPSensors (sensors) {
 //   canvas.invalidate();
 // });
 
+
+/*
+ * BLUETOOTH
+ */
+/*
+ * BLUETOOTH CONSTANTS
+ */
+const DEVICE_NAME    = "Making Sense Arm"; // Target Device Name
+/* UUIDs are advertised by the device. This one just happens to be known in advance */
+const DEVICE_UUID    = "00001101-0000-1000-8000-00805F9B34FB";
+const INPUT_BUF_SIZE = 256;                // Buffered Input Stream; max packet size
 /*
  * BLUETOOTH GLOBALS
  */
@@ -295,7 +323,7 @@ function bluetoothConnect () {
   
   if (!mBluetoothAdaptder.isEnabled())
   {
-    ui.toast("Bluetooth Isn't Enabled!")
+    ui.toast("Bluetooth Isn't Enabled!");
     return false;
   }
   
@@ -349,7 +377,7 @@ function bluetoothConnect () {
 /*
  * POLL FOR INCOMING DATA
  */
-var streams = bluetoothConnect()
+var streams = bluetoothConnect();
 if (streams.result)
 {
   var mmInputStream  = streams.instream;
@@ -370,7 +398,7 @@ if (streams.result)
         {
           var obj = JSON.parse(in_packet);
           console.log(JSON.stringify(obj));
-          drawPSensors(obj["P"]);
+          drawPSensors(obj.P);
         }
         catch (err)
         {
