@@ -2,9 +2,9 @@
  *  |\/| _ | . _  _   (~ _  _  _ _ 
  *  |  |(_||<|| |(_|  _)(/_| |_\(/_
  *                _|               
- *  
- *  Kashev Dalmia :: dalmia3
- *  Isaac Dupree  :: dupree2
+ *  github.com/kashev/making-sense
+ *
+ *  Kashev Dalmia :: kashev.dalmia@gmail.com
  *
  *  making_sense.ino
  */
@@ -34,7 +34,7 @@ int freeRam () {
 #define BAUD_RATE 9600
 #define pinBT_RX 6
 #define pinBT_TX 7
-#define BT_NAME "Making Sense Arm"
+#define BT_NAME "Making Sense Gloves"
 Bluetooth bt = Bluetooth(pinBT_RX, pinBT_TX, BT_NAME);
 
 /*
@@ -80,35 +80,36 @@ readAllSensors (void)
     aJsonObject * pres = aJson.createObject();
     aJson.addItemToObject(root, "T", temp);
     aJson.addItemToObject(root, "P", pres);
-    /* FAKE SENSOR DATA */
     /*
      * Read Temperature Sensors
      */
+    changeMux(0);
     aJson.addNumberToObject(temp, "0", readTempSensor(A0));
     aJson.addNumberToObject(temp, "1", readTempSensor(A1));
     aJson.addNumberToObject(temp, "2", readTempSensor(A2));
-
+    aJson.addNumberToObject(temp, "3", readTempSensor(A3));
+    aJson.addNumberToObject(temp, "4", readTempSensor(A4));
     /*
      * Read Pressure Sensors
      */
     /* FIRST MUX */
-    changeMux(0);
+    changeMux(1);
     aJson.addNumberToObject(pres, "0", readPressSensor(A0));
     aJson.addNumberToObject(pres, "1", readPressSensor(A1));
     aJson.addNumberToObject(pres, "2", readPressSensor(A2));
-    changeMux(1);
+    changeMux(2);
     aJson.addNumberToObject(pres, "3", readPressSensor(A0));
     aJson.addNumberToObject(pres, "4", readPressSensor(A1));
     aJson.addNumberToObject(pres, "5", readPressSensor(A2));
-    changeMux(2);
+    changeMux(3);
     aJson.addNumberToObject(pres, "6", readPressSensor(A0));
     aJson.addNumberToObject(pres, "7", readPressSensor(A1));
     aJson.addNumberToObject(pres, "8", readPressSensor(A2));
-    changeMux(3);
+    changeMux(4);
     aJson.addNumberToObject(pres, "9", readPressSensor(A0));
     aJson.addNumberToObject(pres, "A", readPressSensor(A1));
     aJson.addNumberToObject(pres, "B", readPressSensor(A2));
-    changeMux(4);
+    changeMux(5);
     aJson.addNumberToObject(pres, "C", readPressSensor(A0));
     aJson.addNumberToObject(pres, "D", readPressSensor(A1));
     aJson.addNumberToObject(pres, "E", readPressSensor(A2));
