@@ -4,8 +4,7 @@
  *                _|               
  *  github.com/kashev/making-sense
  *
- *  Kashev Dalmia :: dalmia3 :: kashev.dalmia@gmail.com
- *  Isaac Dupree  :: dupree2 :: isaac.dupree@gmail.com
+ *  Kashev Dalmia :: kashev.dalmia@gmail.com
  *
  *  sensors.cpp
  */
@@ -55,10 +54,21 @@ c2f (float c)
  * d2f
  *     Combines conversions: given a digital input, convert to degrees Fahrenheit.
  */
-inline float
+float
 d2f (int16_t d)
 {
     return (c2f(v2c(d2v(d))));
+}
+
+/*
+ * d2c
+ *     Combines conversions: given a digital input, convert to degrees Celsius
+ */
+
+float
+d2c (int16_t d)
+{
+    return (v2c(d2v(d)));
 }
 
 /*
@@ -70,7 +80,7 @@ readTempSensor (uint8_t pin)
 {
     // return d2f(analogRead(pin));
     /* Spoof Sensor Output */
-    return d2f((int16_t)random(0, 1024));
+    return d2c((int16_t)random(0, 1024));
 }
 
 /*
