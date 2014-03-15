@@ -21,9 +21,9 @@
 /*
  * CONVERSION FUNCTIONS
  */
-inline float d2v (int16_t d);
-inline float v2c (float v);
-inline float c2f (float c);
+float d2v (int16_t d);
+float v2c (float v);
+float c2f (float c);
 
 float d2f (int16_t d);
 float d2c (int16_t d);

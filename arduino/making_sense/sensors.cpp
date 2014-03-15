@@ -23,17 +23,17 @@
  *     Takes a digital voltage in the range of 0-1023 and converts it to a real
  *     voltage between 0 and 5 volts.
  */
-inline float
+float
 d2v (int16_t d)
 {
-    return (5.0 * (float)d / 1024.0);
+    return (5.0 * (float)d / 1023.0);
 }
 
 /*
  * v2c
  *     converts a real voltage into a temperature value in degrees Celsius.
  */
-inline float
+float
 v2c (float v)
 {
     return ((1.8663 - v) / 0.01169);
@@ -44,7 +44,7 @@ v2c (float v)
  *     converts an input temperature in degrees Celsius and converts it
  *     to degrees Fahrenheit.
  */
-inline float
+float
 c2f (float c)
 {
     return ((1.8 * c) + 32.0); // 9.0/5.0 * tempC + 32.0
@@ -78,9 +78,12 @@ d2c (int16_t d)
 float
 readTempSensor (uint8_t pin)
 {
-    // return d2f(analogRead(pin));
+    delay(10);
+    analogRead(pin);
+    delay(10);
+    return d2f(analogRead(pin));
     /* Spoof Sensor Output */
-    return d2c((int16_t)random(0, 1024));
+    // return d2c((int16_t)random(0, 1024));
 }
 
 /*
@@ -93,7 +96,10 @@ readTempSensor (uint8_t pin)
 int
 readPressSensor (uint8_t pin)
 {
-    // return (int)analogRead(pin);
+    delay(10);
+    analogRead(pin);
+    delay(10);
+    return (int)analogRead(pin);
     /* Spoof Sensor Output */
-    return ((int)random(0, 1024));
+    // return ((int)random(0, 1024));
 }

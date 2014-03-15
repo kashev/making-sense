@@ -151,7 +151,7 @@ const Y_P = [
        BACK         PALM 
    temperature   temperature
        _.-._       _.-._
-     _|3|2|1|     |1|2|3|_
+     _|3|1|2|     |2|1|3|_
     |4| | | |     | | | |4|
     | | | | |     | | | | |
     |       | _  _|  '-._ |
@@ -164,8 +164,8 @@ const Y_P = [
 const T_H = 75;
 const T_W = 50;
 /* [0, 1, 2, 3, 4] */
-const X_T = [930, 475, 330, 200, 105];
-const Y_T = [720, 390, 385, 485, 670];
+const X_T = [930, 330, 475, 200, 105];
+const Y_T = [720, 385, 390, 485, 670];
 
 /*
  * CREATE UI
@@ -260,9 +260,10 @@ sbutton.textOff = TEMPERATURE_BUTTON;
  *   given a sensor string and a value,
  *   paint the 'heat' dot on the appropriate location.
  */
+const SM_MAX = 70;
 function drawPSensor (sensor, val) {
   var idx = parseInt(sensor, 16);
-  var RGB = color(val / 1023);
+  var RGB = color(val / SM_MAX);
   paint.setColor(new Color().argb(255, RGB.R, RGB.G, RGB.B));
   var r;
   if (idx > 3 && idx !== 8)
@@ -426,6 +427,7 @@ function bluetoothConnect () {
  * POLL FOR INCOMING DATA
  */
 var streams = bluetoothConnect();
+var msg = "r\n";
 if (streams.result)
 {
   var mmInputStream  = streams.instream;
@@ -433,6 +435,7 @@ if (streams.result)
   var in_packet = "";
   var curr_char = "";
   var prev_char = "";
+  mmOutputStream.write(toUTF8Array(msg));
   util.loop(1, function(){ // 1 ms for stability
     while (mmInputStream.available() > 0)
     {
@@ -454,6 +457,7 @@ if (streams.result)
           {
             drawTSensors(obj.T);
           }
+          mmOutputStream.write(toUTF8Array(msg));
         }
         catch (err)
         {
