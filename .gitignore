@@ -17,3 +17,7 @@ packages/*/**
 
 **/Thumbs.db
 android/Thumbs.db
+
+web/.sass-cache/*
+web/node_modules/*
+web/dist/*

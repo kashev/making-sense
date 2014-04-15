@@ -1,0 +1,89 @@
+/*
+ *  |\/| _ | . _  _   (~ _  _  _ _ 
+ *  |  |(_||<|| |(_|  _)(/_| |_\(/_
+ *                _|               
+ *  github.com/kashev/making-sense
+ *
+ *  Kashev Dalmia :: kashev.dalmia@gmail.com
+ *
+ *  main.scss
+ */
+
+@import url("http://fonts.googleapis.com/css?family=Roboto:600,400,100");
+
+$font-stack : Roboto, Arial;
+$bite-green : #30A848;
+
+html, body{
+    background-color: $bite-green;
+    font-family: $font-stack;
+    color: black;
+    font-size:62.5%;
+    max-width: 80%;
+    margin-right: auto;
+    margin-left: auto;
+}
+
+$content-border : 3.0rem;
+
+#content {
+    border  : $content-border;
+    padding : $content-border;
+    background-color : white;
+}
+h1 {
+    font-size: 9.5rem;
+    font-weight: 100;
+    text-align: center;
+    margin: 1.0rem;
+}
+
+h2 {
+    font-size: 4.0rem;
+    font-weight: 100; 
+}
+
+p {
+    font-size: 2.6rem;
+}
+
+a:link {
+    color: $bite-green;
+}
+
+a:hover {
+    color: black;
+}
+
+a:visited {
+    color: gray;
+}
+
+ul {
+    font-size: 2.0rem;
+}
+
+small {
+    font-size: 1.0rem;
+}
+
+.nav {
+    font-size: 6.0rem;
+    text-align: center;
+}
+
+a i {
+    color: $bite-green;
+}
+
+a i:hover {
+    color: black;
+}
+
+.slider {
+    .slides {
+        img {
+            max-width: 100%;
+        }
+    }
+}
